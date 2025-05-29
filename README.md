@@ -25,9 +25,33 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-
 ## Add the explaination of your changes here 🦁
 
-...
+What I did
 
-------------------------------------------------------------------------------------------
+Fixed fetch bug:
+Added an empty dependency array to the initial data fetching useEffect to ensure the user list is fetched only once on the component mount. Previously, it fetched users on every render, causing unnecessary network requests and performance issues.
+Optimized filtering:
+Removed the redundant API fetch on every search query change. Instead, all filtering happens locally on the already fetched user list, improving responsiveness and reducing network load.
+Added memoization:
+Used useMemo to memoize filtered user results based on the current query and user list, preventing unnecessary recalculations and re-renders.
+Improved typing:
+Added TypeScript interface for users and typed React state to avoid type errors and improve code maintainability.
+Enhanced UI/UX:
+Styled the search input and user list items for better usability and appearance:
+Added padding, border, and rounded corners to the input.
+I have added separator lines and padding to the list items for improved clarity and organization.
+Added (No users found) message when the search yields no results.
+Set helpful TextInput props like autoCorrect={false} and clearButtonMode.
+Improved FlatList key usage:
+Used each user's unique ID as the FlatList key instead of the array index to avoid rendering issues.
+
+Why
+
+These changes collectively make the component more efficient, user-friendly, and maintainable:
+Reducing unnecessary fetch calls improves performance and reduces server load.
+Local filtering with memoization provides near-instant search results.
+Better styling improves the overall user experience.
+Correct typings prevent runtime errors and improve developer experience.
+
+---

@@ -1,32 +1,36 @@
 import { StyleSheet, FlatList, Text, TextInput, View} from 'react-native';
-import React, { useEffect, useState } from 'react';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import React, { useEffect, useMemo, useState } from 'react';
+import ParallaxFlatList from '@/components/ParallaxScrollView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
+interface User {
+  id: number;
+  name: string;
+  // add other fields if needed
+}
+
+
 export default function TabTwoScreen() {
-  const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]); // added the type for User
   const [query, setQuery] = useState("");
 
+  // Fetch users only once on component mount
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
-      .then((data) => setUsers(data));
-  });
+      .then((data) => setUsers(data))
+      // catch the error if promise get failed.
+      .catch((err) => console.error("Failed to fetch users", err));
+  }, []); // Added empty dependency array [] on first fetch to fetch users only once
 
-  useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then((res) => res.json())
-      .then((data) => {
-        const filtered = data.filter((user) =>
-          user.name.toLowerCase().includes(query.toLowerCase())
-        );
-        setFilteredUsers(filtered);
-      });
-  }, [query]); 
+  // Memoize filteredUsers to optimize filtering performance
+  const filteredUsers = useMemo(() => {
+    const lowerQuery = query.toLowerCase();
+    return users.filter(user => user.name.toLowerCase().includes(lowerQuery));
+  }, [query, users]);
 
   return (
-    <ParallaxScrollView
+    <ParallaxFlatList
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
         <IconSymbol
@@ -35,21 +39,27 @@ export default function TabTwoScreen() {
           name="brain.head.profile.fill"
           style={styles.headerImage}
         />
-      }>
+      }
+    >
        <View style={styles.container}>
         <TextInput
           style={styles.input}
           value={query}
           onChangeText={setQuery}
           placeholder="Search users..."
+          autoCorrect={false}
+          autoCapitalize="none"
+          clearButtonMode="while-editing"
         />
         </View>
-        <FlatList
+        <FlatList<User>
           data={filteredUsers}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.id.toString()} // use unique user id 
           renderItem={({ item }) => <Text style={styles.user}>{item.name}</Text>}
+          keyboardShouldPersistTaps="handled"
+          ListEmptyComponent={<Text style={styles.noResults}>No users found.</Text>} // In case no user match the search
         />
-    </ParallaxScrollView>
+    </ParallaxFlatList>
   );
 }
 
@@ -63,5 +73,28 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     gap: 8,
+  },
+  input: {
+    width: "100%",
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    borderColor: '#ddd',
+    borderWidth: 1,
+  },
+  user: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomColor: '#ddd',
+    borderBottomWidth: 1,
+    fontSize: 16,
+  },
+  noResults: {
+    padding: 16,
+    textAlign: 'center',
+    color: '#999',
+    fontStyle: 'italic',
   },
 });
