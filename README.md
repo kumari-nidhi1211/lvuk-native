@@ -41,11 +41,15 @@ In the output, you'll find options to open the app in a
 
 - Used useMemo to memoize filtered user results based on the current query and user list, preventing unnecessary recalculations and re-renders.
 
-4. Improved typing:
+4. Wrap keyExtractor and renderItem in useCallback:
+
+- To prevent unnecessary re-renders and improve performance, especially in large lists, wrap keyExtractor and renderItem functions with React's useCallback hook. This ensures stable references between renders and avoids unnecessary updates to the FlatList component.
+
+5. Improved typing:
 
 - Added TypeScript interface for users and typed React state to avoid type errors and improve code maintainability.
 
-5. Enhanced UI/UX:
+6. Enhanced UI/UX:
 
 - Styled the search input and user list items for better usability and appearance:
 - Added padding, border, and rounded corners to the input.

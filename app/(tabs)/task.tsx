@@ -1,6 +1,5 @@
 import { StyleSheet, FlatList, Text, TextInput, View} from 'react-native';
-import React, { useEffect, useMemo, useState } from 'react';
-import ParallaxFlatList from '@/components/ParallaxScrollView';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 interface User {
@@ -9,6 +8,7 @@ interface User {
   // add other fields if needed
 }
 
+const HEADER_HEIGHT = 170;
 
 export default function TabTwoScreen() {
   const [users, setUsers] = useState<User[]>([]); // added the type for User
@@ -29,19 +29,23 @@ export default function TabTwoScreen() {
     return users.filter(user => user.name.toLowerCase().includes(lowerQuery));
   }, [query, users]);
 
+  const renderItem = useCallback(({ item }: { item: User }) => (
+    <Text style={styles.user}>{item.name}</Text>
+  ), []);
+  
+  const keyExtractor = useCallback((item: User) => item.id.toString(), []); // use unique user id 
+
   return (
-    <ParallaxFlatList
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
+    <View style={styles.safe}>
+      <View style={styles.header}>
         <IconSymbol
           size={310}
           color="#808080"
           name="brain.head.profile.fill"
           style={styles.headerImage}
         />
-      }
-    >
-       <View style={styles.container}>
+      </View>
+      <View style={styles.container}>
         <TextInput
           style={styles.input}
           value={query}
@@ -51,31 +55,38 @@ export default function TabTwoScreen() {
           autoCapitalize="none"
           clearButtonMode="while-editing"
         />
-        </View>
         <FlatList<User>
           data={filteredUsers}
-          keyExtractor={(item) => item.id.toString()} // use unique user id 
-          renderItem={({ item }) => <Text style={styles.user}>{item.name}</Text>}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
           keyboardShouldPersistTaps="handled"
           ListEmptyComponent={<Text style={styles.noResults}>No users found.</Text>} // In case no user match the search
         />
-    </ParallaxFlatList>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+  },
   headerImage: {
     color: '#808080',
     bottom: -90,
-    left: -35,
     position: 'absolute',
   },
+  header: {
+    height: HEADER_HEIGHT,
+    overflow: 'hidden',
+  },
   container: {
-    flexDirection: 'row',
-    gap: 8,
+    flex: 1,
+    padding: 32,
+    gap: 16,
+    overflow: 'hidden',
   },
   input: {
-    width: "100%",
     backgroundColor: '#fff',
     borderRadius: 8,
     paddingHorizontal: 12,
