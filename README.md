@@ -69,4 +69,9 @@ In the output, you'll find options to open the app in a
 - Better styling improves the overall user experience.
 - Correct typings prevent runtime errors and improve developer experience.
 
+## Future Improvement
+
+- We can add debounce to avoid re-rendering on every keystroke.
+- Consider adding a KeyboardAvoidingView if this screen is likely to be used on smaller devices.
+
 ---

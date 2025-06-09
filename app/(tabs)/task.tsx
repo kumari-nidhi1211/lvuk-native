@@ -1,5 +1,6 @@
 import { StyleSheet, FlatList, Text, TextInput, View} from 'react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import ParallaxFlatList from '@/components/ParallaxScrollView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 interface User {
@@ -32,8 +33,9 @@ export default function TabTwoScreen() {
   const renderItem = useCallback(({ item }: { item: User }) => (
     <Text style={styles.user}>{item.name}</Text>
   ), []);
-  
+
   const keyExtractor = useCallback((item: User) => item.id.toString(), []); // use unique user id 
+
 
   return (
     <View style={styles.safe}>
